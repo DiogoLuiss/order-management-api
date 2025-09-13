@@ -1,0 +1,70 @@
+# Arquivos de objeto e bibliotecas
+*.o
+*.lo
+*.la
+*.al
+.libs
+*.so
+*.so.[0-9]
+*.a
+*.vsidx
+
+# Arquivos Python
+*.pyc
+*.pyo
+
+# Arquivos de patch
+*.rej
+
+# Arquivos temporários
+*~
+
+# Arquivos de swap de editores de texto
+## .#*
+
+# Arquivos de estado do Windows
+.DS_Store
+
+# Diretórios de compilação
+bin/
+obj/
+
+# Arquivos de solução e usuário do Visual Studio
+*.suo
+*.user
+
+# Arquivos de backup do ML
+*.~ml
+*.lock
+*.bin
+
+PML.Varejo.View.WinForm/App.config
+PML.Varejo.View.WinForm/App.config
+PML.Varejo.View.WinForm/App.config
+/PML.Varejo.View.WinForm/App.config
+/Importacao/App.config
+/Importacao/App.config
+/GeradorRelease/.vs
+/Importacao/.vs
+/PML.AdminTools/.vs
+/PML.Framework.BoletoNet/.vs
+/PML.Framework.Data/.vs
+/PML.Framework/.vs
+/PML.Rest/.vs
+/PML.Services/.vs
+/PML.Sync/.vs
+/PML.Varejo.BackupManager/.vs
+/PML.Varejo.GerarSetup/.vs
+/PML.Varejo.Model/.vs
+/PML.Varejo.Restore/.vs
+/PML.Varejo.View.Relat/.vs
+/PML.Varejo.View.WinForm/.vs
+/PML.VarejoPdv.View.Winform/.vs
+
+/.vs
+PML.Varejo.View.WinForm/App.config
+appsettings.Development.json
+appsettings.json
+appsettings.Production.json
+appsettings.Development.json
+appsettings.json
