@@ -36,6 +36,28 @@ namespace OrderManagementApi.Controllers
 
         #region Methods
 
+        [HttpPut("{id}/status")]
+        public async Task<IActionResult> UpdateOrderStatus(int id, [FromBody] short newStatusId)
+        {
+            if (id <= 0)
+                return BadRequest(new { Message = "ID inválido." });
+
+            try
+            {
+                await _orderRepository.UpdateOrderStatusAsync(id, newStatusId);
+                return Ok(new { Message = "Status do pedido atualizado com sucesso." });
+            }
+            catch (BadRequestException ex)
+            {
+                return BadRequest(new { ex.Message });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { Message = $"Erro interno: {ex.Message}" });
+            }
+        }
+
+
         [HttpPost]
         public async Task<IActionResult> CreateOrder([FromBody] CreateOrderViewModel viewModel)
         {
@@ -88,6 +110,28 @@ namespace OrderManagementApi.Controllers
                 return StatusCode(500, new { Message = $"Erro interno: {ex.Message}" });
             }
         }
+
+        [HttpGet("{id}/status")]
+        public async Task<IActionResult> GetOrderStatus(int id)
+        {
+            if (id <= 0)
+                return BadRequest(new { Message = "ID inválido." });
+
+            try
+            {
+                var status = await _orderRepository.GetOrderStatusByIdAsync(id);
+                return Ok(status);
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(new { Message = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { Message = $"Erro interno: {ex.Message}" });
+            }
+        }
+
 
         #endregion
     }

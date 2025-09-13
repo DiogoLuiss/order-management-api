@@ -27,6 +27,72 @@ namespace OrderManagementApi.Data.Repository
 
         #region Methods
 
+        public async Task UpdateOrderStatusAsync(int orderId, short newStatusId)
+        {
+            #region Validations
+
+            string checkOrderSql = @"
+                SELECT COUNT(1)
+                FROM [dbo].[order]
+                WHERE id = @OrderId;
+            ";
+
+            int orderExists = await _dbConnection.ExecuteScalarAsync<int>(checkOrderSql, new { OrderId = orderId });
+
+            if (orderExists == 0)
+                throw new BadRequestException($"Pedido com ID {orderId} não encontrado.");
+
+            string checkStatusSql = @"
+                SELECT COUNT(1)
+                FROM [dbo].[order_status]
+                WHERE id = @StatusId;
+            ";
+
+            int statusExists = await _dbConnection.ExecuteScalarAsync<int>(checkStatusSql, new { StatusId = newStatusId });
+
+            if (statusExists == 0)
+                throw new BadRequestException($"Status com ID {newStatusId} não encontrado.");
+
+            #endregion
+
+
+            string sql = @"
+                UPDATE [dbo].[order]
+                SET status_id = @NewStatusId
+                WHERE id = @OrderId;
+            ";
+
+            int affectedRows = await _dbConnection.ExecuteAsync(sql, new
+            {
+                OrderId = orderId,
+                NewStatusId = newStatusId
+            });
+
+            if (affectedRows == 0)
+                throw new BadRequestException($"Pedido com ID {orderId} não encontrado ou status não alterado.");
+        }
+
+
+        public async Task<OrderStatusDto> GetOrderStatusByIdAsync(int orderId)
+        {
+            string sql = @"
+                SELECT s.id, s.description
+                FROM [dbo].[order] o
+                INNER JOIN [dbo].[order_status] s ON s.id = o.status_id
+                WHERE o.id = @OrderId;
+            ";
+
+            var status = await _dbConnection.QuerySingleOrDefaultAsync<OrderStatusDto>(
+                sql, new { OrderId = orderId }
+            );
+
+            if (status == null)
+                throw new KeyNotFoundException($"Pedido com ID {orderId} não encontrado.");
+
+            return status;
+        }
+
+
         public async Task<int> CreateOrderAsync(CreateOrderDto dto)
         {
             #region Validations
