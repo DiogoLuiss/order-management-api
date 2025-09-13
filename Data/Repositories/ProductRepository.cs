@@ -1,5 +1,6 @@
 ﻿using System.Data;
 using Dapper;
+using OrderManagementApi.Data.Dapper;
 using OrderManagementApi.DTOs;
 using OrderManagementApi.Exceptions;
 using OrderManagementApi.Models;
@@ -8,10 +9,19 @@ namespace OrderManagementApi.Data.Repository
 {
     public class ProductRepository : BaseRepository
     {
+        #region Atributs
+
+        private readonly IDapperWrapper _dapper;
+
+        #endregion
+
         #region Constructor
 
-        public ProductRepository(IDbConnection dbConnection) : base(dbConnection)
+        public ProductRepository(
+            IDbConnection dbConnection,
+            IDapperWrapper dapperWrapper) : base(dbConnection)
         {
+            _dapper = dapperWrapper;
         }
 
         #endregion
@@ -99,7 +109,7 @@ namespace OrderManagementApi.Data.Repository
 
             string sql = "DELETE FROM product WHERE id = @Id";
             var parameters = new { Id = id };
-            int affectedRows = await _dbConnection.ExecuteAsync(sql, parameters);
+            int affectedRows = await _dapper.ExecuteAsync(sql, parameters);
             return affectedRows > 0;
         }
 
@@ -227,7 +237,7 @@ namespace OrderManagementApi.Data.Repository
                 WHERE product_id = @ProductId;
             ";
 
-            return await _dbConnection.ExecuteScalarAsync<int>(sql, new { ProductId = productId });
+            return await _dapper.ExecuteScalarAsync<int>(sql, new { ProductId = productId });
         }
 
         #endregion

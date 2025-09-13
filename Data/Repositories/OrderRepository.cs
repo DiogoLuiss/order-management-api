@@ -1,4 +1,5 @@
 ﻿using Dapper;
+using OrderManagementApi.Data.Dapper;
 using OrderManagementApi.DTOs;
 using OrderManagementApi.Exceptions;
 using OrderManagementApi.Models;
@@ -14,6 +15,7 @@ namespace OrderManagementApi.Data.Repository
         private readonly ClientRepository _clientRepository;
         private readonly NotificationRepository _notificationRepository;
         private readonly OrderStatusRepository _orderStatusRepository;
+        private readonly IDapperWrapper _dapper;
 
         #endregion
 
@@ -24,12 +26,14 @@ namespace OrderManagementApi.Data.Repository
             ProductRepository productRepository,
             ClientRepository clientRepository,
             NotificationRepository notificationRepository,
-            OrderStatusRepository orderStatusRepository) : base(dbConnection)
+            OrderStatusRepository orderStatusRepository,
+            IDapperWrapper dapperWrapper) : base(dbConnection)
         {
             _productRepository = productRepository;
             _clientRepository = clientRepository;
             _notificationRepository = notificationRepository;
             _orderStatusRepository = orderStatusRepository; 
+            _dapper = dapperWrapper;
         }
 
         #endregion
@@ -46,7 +50,7 @@ namespace OrderManagementApi.Data.Repository
                 WHERE id = @OrderId;
             ";
 
-            int orderExists = await _dbConnection.ExecuteScalarAsync<int>(checkOrderSql, new { OrderId = orderId });
+            int orderExists = await _dapper.ExecuteScalarAsync<int>(checkOrderSql, new { OrderId = orderId });
 
             if (orderExists == 0)
                 throw new BadRequestException($"Pedido com ID {orderId} não encontrado.");
@@ -57,7 +61,7 @@ namespace OrderManagementApi.Data.Repository
                 WHERE id = @StatusId;
             ";
 
-            int statusExists = await _dbConnection.ExecuteScalarAsync<int>(checkStatusSql, new { StatusId = newStatusId });
+            int statusExists = await _dapper.ExecuteScalarAsync<int>(checkStatusSql, new { StatusId = newStatusId });
 
             if (statusExists == 0)
                 throw new BadRequestException($"Status com ID {newStatusId} não encontrado.");

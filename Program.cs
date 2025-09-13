@@ -3,6 +3,7 @@ using OrderManagementApi.Service;
 using Microsoft.Data.SqlClient;
 using System.Data;
 using System.Reflection;
+using OrderManagementApi.Data.Dapper;
 
 var builder = WebApplication.CreateBuilder(args);
 Dapper.DefaultTypeMap.MatchNamesWithUnderscores = true;
@@ -16,6 +17,8 @@ builder.Services.AddValidators();
 builder.Services.AddControllersWithViews();
 builder.Services.AddScoped<IDbConnection>(sp =>
     new SqlConnection(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+builder.Services.AddScoped<IDapperWrapper, DapperWrapper>();
 
 builder.Services.AddRepositories(Assembly.GetExecutingAssembly());
 

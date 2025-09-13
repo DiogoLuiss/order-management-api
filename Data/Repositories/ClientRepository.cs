@@ -1,4 +1,5 @@
 ﻿using Dapper;
+using OrderManagementApi.Data.Dapper;
 using OrderManagementApi.DTOs;
 using OrderManagementApi.Exceptions;
 using OrderManagementApi.Models;
@@ -8,10 +9,17 @@ namespace OrderManagementApi.Data.Repository
 {
     public class ClientRepository : BaseRepository
     {
+        #region Atributs
+
+        private readonly IDapperWrapper _dapper;
+
+        #endregion
+
         #region Constructor
 
-        public ClientRepository(IDbConnection dbConnection) : base(dbConnection)
+        public ClientRepository(IDbConnection dbConnection, IDapperWrapper dapper) : base(dbConnection)
         {
+            _dapper = dapper;
         }
 
         #endregion
@@ -98,9 +106,6 @@ namespace OrderManagementApi.Data.Repository
 
         public async Task<bool> UpdateClientAsync(int id, string? name, string? email, string? phone)
         {
-            if (id <= 0)
-                throw new ArgumentException("ID inválido.", nameof(id));
-
             var setClauses = new List<string>();
             var parameters = new DynamicParameters();
             parameters.Add("Id", id);
@@ -141,7 +146,7 @@ namespace OrderManagementApi.Data.Repository
 
             string sql = "DELETE FROM client WHERE id = @Id";
 
-            int affectedRows = await _dbConnection.ExecuteAsync(sql, new { Id = id });
+            int affectedRows = await _dapper.ExecuteAsync(sql, new { Id = id });
             return affectedRows > 0;
         }
 
@@ -176,7 +181,7 @@ namespace OrderManagementApi.Data.Repository
 
         #endregion
 
-        #region MyRegion
+        #region Private Methods
 
         public async Task<int> CountOrdersByClientAsync(int clientId)
         {
@@ -186,7 +191,7 @@ namespace OrderManagementApi.Data.Repository
                 WHERE client_id = @ClientId;
             ";
 
-            return await _dbConnection.ExecuteScalarAsync<int>(sql, new { ClientId = clientId });
+            return await _dapper.ExecuteScalarAsync<int>(sql, new { ClientId = clientId });
         }
 
         #endregion
