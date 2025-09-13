@@ -1,5 +1,6 @@
 ﻿using Dapper;
 using OrderManagementApi.DTOs;
+using OrderManagementApi.Exceptions;
 using OrderManagementApi.Models;
 using System.Data;
 
@@ -133,6 +134,11 @@ namespace OrderManagementApi.Data.Repository
 
         public async Task<bool> DeleteClientAsync(int id)
         {
+            int count = await this.CountOrdersByClientAsync(id);
+
+            if (count > 0)
+                throw new BadRequestException($"Existem {count} pedido(s) criado(s) para este cliente, não será possível excluir.");
+
             string sql = "DELETE FROM client WHERE id = @Id";
 
             int affectedRows = await _dbConnection.ExecuteAsync(sql, new { Id = id });
@@ -166,6 +172,21 @@ namespace OrderManagementApi.Data.Repository
                 Email = c.Email,
                 Phone = c.Phone
             }).ToList();
+        }
+
+        #endregion
+
+        #region MyRegion
+
+        public async Task<int> CountOrdersByClientAsync(int clientId)
+        {
+            var sql = @"
+                SELECT COUNT(*)
+                FROM [dbo].[order]
+                WHERE client_id = @ClientId;
+            ";
+
+            return await _dbConnection.ExecuteScalarAsync<int>(sql, new { ClientId = clientId });
         }
 
         #endregion

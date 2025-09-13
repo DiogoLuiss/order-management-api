@@ -1,6 +1,7 @@
 ﻿using System.Data;
 using Dapper;
 using OrderManagementApi.DTOs;
+using OrderManagementApi.Exceptions;
 using OrderManagementApi.Models;
 
 namespace OrderManagementApi.Data.Repository
@@ -69,12 +70,12 @@ namespace OrderManagementApi.Data.Repository
         public async Task<bool> UpdateProductAsync(int id, string name, string description, decimal price, int stockQuantity)
         {
             string sql = @"
-        UPDATE product
-        SET name = @Name,
-            description = @Description,
-            price = @Price,
-            stock_quantity = @StockQuantity
-        WHERE id = @Id";
+                UPDATE product
+                SET name = @Name,
+                    description = @Description,
+                    price = @Price,
+                    stock_quantity = @StockQuantity
+                WHERE id = @Id";
 
             var parameters = new
             {
@@ -91,6 +92,11 @@ namespace OrderManagementApi.Data.Repository
 
         public async Task<bool> DeleteProductAsync(int id)
         {
+            var count = await this.CountOrdersWithProductAsyncInternal(id);
+
+            if (count > 0) 
+                throw new BadRequestException($"Existem {count} pedido(s) criado(s) para esse produto, não será possível excluir.");
+
             string sql = "DELETE FROM product WHERE id = @Id";
             var parameters = new { Id = id };
             int affectedRows = await _dbConnection.ExecuteAsync(sql, parameters);
@@ -205,6 +211,26 @@ namespace OrderManagementApi.Data.Repository
                 Price = p.Price
             }).ToList();
         }
+
+
+        #endregion
+
+        #region 
+
+        #region Private Methods 
+
+        private async Task<int> CountOrdersWithProductAsyncInternal(int productId)
+        {
+            var sql = @"
+                SELECT COUNT(DISTINCT order_id)
+                FROM [dbo].[item_order]
+                WHERE product_id = @ProductId;
+            ";
+
+            return await _dbConnection.ExecuteScalarAsync<int>(sql, new { ProductId = productId });
+        }
+
+        #endregion
 
 
         #endregion
