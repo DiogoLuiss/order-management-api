@@ -7,9 +7,15 @@ namespace OrderManagementApi.Data.Repository
 {
     public class OrderStatusRepository : BaseRepository
     {
+        #region Constructor
+
         public OrderStatusRepository(IDbConnection dbConnection) : base(dbConnection)
         {
         }
+
+        #endregion
+
+        #region Methods
 
         public async Task<List<OrderStatusDto>> GetAllStatusesAsync()
         {
@@ -31,5 +37,23 @@ namespace OrderManagementApi.Data.Repository
 
             return statusDtos;
         }
+
+        public async Task<string> GetStatusDescriptionByIdAsync(short statusId, IDbTransaction? transaction = null)
+        {
+            string sql = @"
+                SELECT description
+                FROM [dbo].[order_status]
+                WHERE id = @StatusId;
+            ";
+
+            var description = await _dbConnection.ExecuteScalarAsync<string>(sql, new { StatusId = statusId }, transaction);
+
+            if (string.IsNullOrWhiteSpace(description))
+                return $"Status com ID {statusId} não encontrado.";
+
+            return description;
+        }
+
+        #endregion
     }
 }

@@ -4,6 +4,7 @@ using OrderManagementApi.Service;
 using OrderManagementApi.Validators;
 using OrderManagementApi.ViewModel;
 using Microsoft.AspNetCore.Mvc;
+using OrderManagementApi.Exceptions;
 
 namespace OrderManagementApi.Controllers
 {
@@ -121,6 +122,10 @@ namespace OrderManagementApi.Controllers
                     return NotFound(new { Message = "Cliente não encontrado." });
 
                 return Ok(new { Message = "Cliente deletado com sucesso." });
+            }
+            catch(BadRequestException ex)
+            {
+                return StatusCode(StatusCodes.Status400BadRequest, new { ex.Message });
             }
             catch (Exception ex)
             {

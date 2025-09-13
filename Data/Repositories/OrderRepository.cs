@@ -12,15 +12,24 @@ namespace OrderManagementApi.Data.Repository
 
         private readonly ProductRepository _productRepository;
         private readonly ClientRepository _clientRepository;
+        private readonly NotificationRepository _notificationRepository;
+        private readonly OrderStatusRepository _orderStatusRepository;
 
         #endregion
 
         #region Constructor
 
-        public OrderRepository(IDbConnection dbConnection, ProductRepository productRepository, ClientRepository clientRepository) : base(dbConnection)
+        public OrderRepository(
+            IDbConnection dbConnection,
+            ProductRepository productRepository,
+            ClientRepository clientRepository,
+            NotificationRepository notificationRepository,
+            OrderStatusRepository orderStatusRepository) : base(dbConnection)
         {
             _productRepository = productRepository;
             _clientRepository = clientRepository;
+            _notificationRepository = notificationRepository;
+            _orderStatusRepository = orderStatusRepository; 
         }
 
         #endregion
@@ -55,6 +64,7 @@ namespace OrderManagementApi.Data.Repository
 
             #endregion
 
+            var oldStatus = await GetOrderStatusDescriptionAsync(orderId);
 
             string sql = @"
                 UPDATE [dbo].[order]
@@ -62,16 +72,40 @@ namespace OrderManagementApi.Data.Repository
                 WHERE id = @OrderId;
             ";
 
-            int affectedRows = await _dbConnection.ExecuteAsync(sql, new
+            if (_dbConnection.State != ConnectionState.Open)
+                _dbConnection.Open();
+
+            using (var transaction = _dbConnection.BeginTransaction())
             {
-                OrderId = orderId,
-                NewStatusId = newStatusId
-            });
+                try
+                {
+                    int affectedRows = await _dbConnection.ExecuteAsync(sql, new
+                    {
+                        OrderId = orderId,
+                        NewStatusId = newStatusId
+                    }, transaction);
 
-            if (affectedRows == 0)
-                throw new BadRequestException($"Pedido com ID {orderId} não encontrado ou status não alterado.");
+                    if (affectedRows == 0)
+                        throw new BadRequestException($"Pedido com ID {orderId} não encontrado ou status não alterado.");
+
+                    string newStatusDescription = await _orderStatusRepository.GetStatusDescriptionByIdAsync(newStatusId, transaction);
+                    string message = $"Pedido #{orderId} mudou de '{oldStatus}' para '{newStatusDescription}'.";
+                    await _notificationRepository.CreateNotificationAsync(orderId, message, transaction);
+
+                    transaction.Commit();
+                }
+                catch (BadRequestException ex)
+                {
+                    transaction.Rollback();
+                    throw new BadRequestException(ex.Message);
+                }
+                catch (Exception ex)
+                {
+                    transaction.Rollback();
+                    throw new Exception(ex.Message);
+                }
+            }
         }
-
 
         public async Task<OrderStatusDto> GetOrderStatusByIdAsync(int orderId)
         {
@@ -91,7 +125,6 @@ namespace OrderManagementApi.Data.Repository
 
             return status;
         }
-
 
         public async Task<int> CreateOrderAsync(CreateOrderDto dto)
         {
@@ -229,7 +262,7 @@ namespace OrderManagementApi.Data.Repository
                 },
                 new
                 {
-                    ClientName = string.IsNullOrWhiteSpace(clientName) ? null : $"%{clientName}%",
+                    ClientName = string.IsNullOrWhiteSpace(clientName) ? null : $"{clientName}%",
                     OrderStatusId = orderStatusId
                 }
             );
@@ -305,6 +338,27 @@ namespace OrderManagementApi.Data.Repository
                 Status = order.Status?.Description ?? string.Empty,
                 Items = items.ToList()
             };
+        }
+
+        #endregion
+
+        #region Private Methods
+
+        private async Task<string> GetOrderStatusDescriptionAsync(int orderId)
+        {
+            string sql = @"
+                SELECT s.description 
+                FROM [dbo].[order] o
+                INNER JOIN [dbo].[order_status] s ON s.id = o.status_id
+                WHERE o.id = @OrderId;
+            ";
+
+            var statusDescription = await _dbConnection.ExecuteScalarAsync<string>(sql, new { OrderId = orderId });
+
+            if (string.IsNullOrWhiteSpace(statusDescription))
+                throw new KeyNotFoundException($"Status do pedido com ID {orderId} não encontrado.");
+
+            return statusDescription;
         }
 
         #endregion

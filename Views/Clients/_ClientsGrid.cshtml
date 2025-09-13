@@ -26,13 +26,14 @@
 					<td>@client.Phone</td>
 					<td>@client.CreatedAt.ToString("dd/MM/yyyy HH:mm")</td>
 					<td>
-						<button class="btn btn-sm btn-secondary btn-update">Alterar</button>
-						<button class="btn btn-sm btn-danger me-2 btn-delete"
-								data-id="@client.Id"
-								data-name="@client.Name">
-							Deletar
-						</button>
+						<div class="btn-group-wrapper d-flex flex-nowrap gap-2 justify-content-end">
 
+						<button class="btn btn-sm btn-secondary btn-update">Alterar</button>
+						<button class="btn btn-sm btn-danger btn-delete"
+								data-id="@client.Id"
+								data-name="@client.Name">Deletar</button>
+
+						</div>
 					</td>
 				</tr>
 			}
