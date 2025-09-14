@@ -17,27 +17,35 @@
             </tr>
         </thead>
         <tbody id="productsTable">
-            @foreach (var product in Model)
+            @if (Model != null && Model.Any())
+            {
+                foreach (var product in Model)
+                {
+                    <tr>
+                        <td class="d-none">@product.Id</td>
+                        <td>@product.Name</td>
+                        <td>@product.Description</td>
+                        <td>@product.Price.ToString("C")</td>
+                        <td>@product.StockQuantity</td>
+                        <td>
+                            <div class="btn-group-wrapper d-flex flex-nowrap gap-2 justify-content-end">
+                                <button class="btn btn-sm btn-secondary btn-update">Alterar</button>
+                                <button class="btn btn-sm btn-danger btn-delete"
+                                        data-id="@product.Id"
+                                        data-name="@product.Name">
+                                    Deletar
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            }
+            else
             {
                 <tr>
-                    <td class="d-none">@product.Id</td>
-                    <td>@product.Name</td>
-                    <td>@product.Description</td>
-                    <td>@product.Price.ToString("C")</td>
-                    <td>@product.StockQuantity</td>
-                    <td>
-                        <div class="btn-group-wrapper d-flex flex-nowrap gap-2 justify-content-end">
-                            <button class="btn btn-sm btn-secondary btn-update">Alterar</button>
-                            <button class="btn btn-sm btn-danger btn-delete"
-                                    data-id="@product.Id"
-                                    data-name="@product.Name">
-                                Deletar
-                            </button>
-                        </div>
+                    <td colspan="6" class="text-center text-muted">
+                        Nenhum registro encontrado.
                     </td>
-
-
-
                 </tr>
             }
         </tbody>

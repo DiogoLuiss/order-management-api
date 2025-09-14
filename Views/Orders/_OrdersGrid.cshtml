@@ -1,44 +1,55 @@
 ﻿@model IEnumerable<OrderManagementApi.DTOs.OrderDto>
 
 @{
-	ViewData["Title"] = "Pedidos";
+    ViewData["Title"] = "Pedidos";
 }
 
 <div class="table-responsive">
-	<table class="table table-hover table-bordered">
-		<thead class="table-primary">
-			<tr>
-				<th>Nº Pedido</th>
-				<th>Cliente</th>
-				<th>Data do Pedido</th>
-				<th>Valor Total</th>
-				<th>Status</th>
-				<th>Ações</th>
-			</tr>
-		</thead>
-		<tbody id="ordersTable">
-			@foreach (var order in Model)
-			{
-				<tr>
-					<td>@order.Id</td>
-					<td>@order.NomeClinete</td>
-					<td>@order.OrderDate.ToString("dd/MM/yyyy HH:mm")</td>
-					<td>@order.TotalValue.ToString("C")</td>
-					<td>@order.Status</td>
-					<td>
-						<div class="btn-group-wrapper d-flex flex-nowrap gap-2 justify-content-end">
-							<button class="btn btn-sm btn-secondary btn-view-details"
-									data-id="@order.Id">
-								Detalhes
-							</button>
-							<button class="btn btn-sm btn-primary btn-update-status"
-									data-id="@order.Id">
-								Alterar Status
-							</button>
-						</div>
-					</td>
-				</tr>
-			}
-		</tbody>
-	</table>
+    <table class="table table-hover table-bordered">
+        <thead class="table-primary">
+            <tr>
+                <th>Nº Pedido</th>
+                <th>Cliente</th>
+                <th>Data do Pedido</th>
+                <th>Valor Total</th>
+                <th>Status</th>
+                <th>Ações</th>
+            </tr>
+        </thead>
+        <tbody id="ordersTable">
+            @if (Model != null && Model.Any())
+            {
+                foreach (var order in Model)
+                {
+                    <tr>
+                        <td>@order.Id</td>
+                        <td>@order.NomeClinete</td>
+                        <td>@order.OrderDate.ToString("dd/MM/yyyy HH:mm")</td>
+                        <td>@order.TotalValue.ToString("C")</td>
+                        <td>@order.Status</td>
+                        <td>
+                            <div class="btn-group-wrapper d-flex flex-nowrap gap-2 justify-content-end">
+                                <button class="btn btn-sm btn-secondary btn-view-details"
+                                        data-id="@order.Id">
+                                    Detalhes
+                                </button>
+                                <button class="btn btn-sm btn-primary btn-update-status"
+                                        data-id="@order.Id">
+                                    Alterar Status
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr>
+                    <td colspan="6" class="text-center text-muted">
+                        Nenhum registro encontrado.
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
 </div>

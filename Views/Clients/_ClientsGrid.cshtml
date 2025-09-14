@@ -1,44 +1,53 @@
 ﻿@model IEnumerable<OrderManagementApi.DTOs.ClientDto>
 
 @{
-	ViewData["Title"] = "Clientes";
+    ViewData["Title"] = "Clientes";
 }
 
 <div class="table-responsive">
-	<table class="table table-hover table-bordered">
-		<thead class="table-primary">
-			<tr>
-				<th class="d-none">Id</th>
-				<th>Nome</th>
-				<th>Email</th>
-				<th>Telefone</th>
-				<th>Criado em</th>
-				<th>Ações</th>
-			</tr>
-		</thead>
-		<tbody id="clientsTable">
-			@foreach (var client in Model)
-			{
-				<tr>
-					<td class="d-none">@client.Id</td>
-					<td>@client.Name</td>
-					<td>@client.Email</td>
-					<td>@client.Phone</td>
-					<td>@client.CreatedAt.ToString("dd/MM/yyyy HH:mm")</td>
-					<td>
-						<div class="btn-group-wrapper d-flex flex-nowrap gap-2 justify-content-end">
-
-						<button class="btn btn-sm btn-secondary btn-update">Alterar</button>
-						<button class="btn btn-sm btn-danger btn-delete"
-								data-id="@client.Id"
-								data-name="@client.Name">Deletar</button>
-
-						</div>
-					</td>
-				</tr>
-			}
-
-
-		</tbody>
-	</table>
+    <table class="table table-hover table-bordered">
+        <thead class="table-primary">
+            <tr>
+                <th class="d-none">Id</th>
+                <th>Nome</th>
+                <th>Email</th>
+                <th>Telefone</th>
+                <th>Criado em</th>
+                <th>Ações</th>
+            </tr>
+        </thead>
+        <tbody id="clientsTable">
+            @if (Model != null && Model.Any())
+            {
+                foreach (var client in Model)
+                {
+                    <tr>
+                        <td class="d-none">@client.Id</td>
+                        <td>@client.Name</td>
+                        <td>@client.Email</td>
+                        <td>@client.Phone</td>
+                        <td>@client.CreatedAt.ToString("dd/MM/yyyy HH:mm")</td>
+                        <td>
+                            <div class="btn-group-wrapper d-flex flex-nowrap gap-2 justify-content-end">
+                                <button class="btn btn-sm btn-secondary btn-update">Alterar</button>
+                                <button class="btn btn-sm btn-danger btn-delete"
+                                        data-id="@client.Id"
+                                        data-name="@client.Name">
+                                    Deletar
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr>
+                    <td colspan="6" class="text-center text-muted">
+                        Nenhum registro encontrado.
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
 </div>

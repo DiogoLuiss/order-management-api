@@ -11,20 +11,31 @@
 			</tr>
 		</thead>
 		<tbody>
-			@foreach (var client in Model)
+			@if (Model != null && Model.Any())
+			{
+				@foreach (var client in Model)
+				{
+					<tr>
+						<td>@client.Name</td>
+						<td>@client.Email</td>
+						<td>@client.Phone</td>
+						<td class="text-center">
+							<button class="btn btn-sm btn-primary select-customer"
+									data-id="@client.Id"
+									data-name="@client.Name"
+									data-email="@client.Email"
+									data-phone="@client.Phone">
+								Selecionar
+							</button>
+						</td>
+					</tr>
+				}
+			}
+			else
 			{
 				<tr>
-					<td>@client.Name</td>
-					<td>@client.Email</td>
-					<td>@client.Phone</td>
-					<td class="text-center">
-						<button class="btn btn-sm btn-primary select-customer"
-								data-id="@client.Id"
-								data-name="@client.Name"
-								data-email="@client.Email"
-								data-phone="@client.Phone">
-							Selecionar
-						</button>
+					<td colspan="6" class="text-center text-muted">
+						Nenhum registro encontrado.
 					</td>
 				</tr>
 			}

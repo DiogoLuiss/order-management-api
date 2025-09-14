@@ -11,23 +11,35 @@
 			</tr>
 		</thead>
 		<tbody id="productList">
-			@foreach (var product in Model)
+			@if (Model != null && Model.Any())
+			{
+				@foreach (var product in Model)
+				{
+					<tr>
+						<td>@product.Name</td>
+						<td>@product.Description</td>
+						<td>@product.Price.ToString("C")</td>
+						<td>
+							<button class="btn btn-primary btn-sm select-product"
+									data-id="@product.Id"
+									data-name="@product.Name"
+									data-description="@product.Description"
+									data-price="@product.Price">
+								Selecionar
+							</button>
+						</td>
+					</tr>
+				}
+			}
+			else
 			{
 				<tr>
-					<td>@product.Name</td>
-					<td>@product.Description</td>
-					<td>@product.Price.ToString("C")</td>
-					<td>
-						<button class="btn btn-primary btn-sm select-product"
-								data-id="@product.Id"
-								data-name="@product.Name"
-								data-description="@product.Description"
-								data-price="@product.Price">
-							Selecionar
-						</button>
+					<td colspan="6" class="text-center text-muted">
+						Nenhum registro encontrado.
 					</td>
 				</tr>
 			}
+
 		</tbody>
 	</table>
 </div>
