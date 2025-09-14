@@ -10,9 +10,9 @@ GO
 
 CREATE TABLE [dbo].[client](
 	[id] [int] IDENTITY(1,1) NOT NULL,
-	[name] [nvarchar](255) NOT NULL,
-	[email] [nvarchar](255) NOT NULL,
-	[phone] [nvarchar](50) NOT NULL,
+	[name] [nvarchar](255) NOT NULL UNIQUE,
+	[email] [nvarchar](255) NOT NULL UNIQUE,
+	[phone] [nvarchar](50) NOT NULL ,
 	[created_at] [datetime] NOT NULL,
  CONSTRAINT [PK_client] PRIMARY KEY CLUSTERED 
 (
