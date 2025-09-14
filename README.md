@@ -52,7 +52,7 @@ Todas as operações de CRUD para clientes, produtos e pedidos são feitas via c
 Clone o repositório:
     <pre><code>git clone https://github.com/DiogoLuiss/order-management-frontend.git</code></pre>
     
-  <li>Configure a URL da API no arquivo <code>src/js/service/api.js</code>, pois é o único lugar onde precisa ser alterada.</li>
-  <li>Abra o arquivo <strong>index.html</strong> no navegador.</li>
+- Configure a URL da API no arquivo <code>src/js/service/api.js</code>, pois é o único lugar onde precisa ser alterada.
+- Abra o arquivo <strong>index.html</strong> no navegador.
 
 
