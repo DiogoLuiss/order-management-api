@@ -41,7 +41,7 @@ namespace OrderManagementApi.Controllers
 
             try
             {
-                List<ProductDto> products = await _productRepository.GetProductListAsync(viewModel.Name);
+                ProductListResponseDto products = await _productRepository.GetProductListAsync(viewModel.Name, viewModel.Page);
                 return PartialView("_ProductsGrid", products);
             }
             catch (Exception ex)
@@ -60,7 +60,7 @@ namespace OrderManagementApi.Controllers
 
             try
             {
-                var products = await _productRepository.GetSimpleProductListAsync(viewModel.Name);
+                var products = await _productRepository.GetProductListSimpleAsync(viewModel.Name, viewModel.Page);
                 return PartialView("_ProductsGridSimple", products);
             }
             catch (Exception ex)

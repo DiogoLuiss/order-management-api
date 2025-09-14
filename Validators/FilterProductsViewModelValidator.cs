@@ -7,6 +7,8 @@ namespace OrderManagementApi.Validators
     {
         public FilterProductsViewModelValidator()
         {
+            Include(new ViewModelPaginationValidator());
+
             RuleFor(x => x.Name)
             .MaximumLength(255)
             .WithMessage("O campo 'name' deve ter no máximo 255 caracteres.");

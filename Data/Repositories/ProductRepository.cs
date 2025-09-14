@@ -46,35 +46,46 @@ namespace OrderManagementApi.Data.Repository
             await _dbConnection.ExecuteAsync(sql, parameters);
         }
 
-        public async Task<List<ProductDto>> GetProductListAsync(string? nameOrDescription)
+        public async Task<ProductListResponseDto> GetProductListAsync(string? nameOrDescription, int page = 1)
         {
-            string sql = @"
-                SELECT 
-                    id,
-                    name,
-                    description,
-                    price,
-                    stock_quantity
-                FROM product";
+            const int pageSize = 50;
+
+            string sqlBase = @"
+            SELECT id, name, description, price, stock_quantity
+            FROM product";
 
             var parameters = new DynamicParameters();
 
             if (!string.IsNullOrWhiteSpace(nameOrDescription))
             {
-                sql += " WHERE name LIKE @search OR description LIKE @search";
+                sqlBase += " WHERE name LIKE @search OR description LIKE @search";
                 parameters.Add("search", $"{nameOrDescription}%");
             }
 
-            var products = await _dbConnection.QueryAsync<Product>(sql, parameters);
+            string countSql = $"SELECT COUNT(*) FROM ({sqlBase}) AS countQuery";
+            int totalItems = await _dbConnection.ExecuteScalarAsync<int>(countSql, parameters);
 
-            return products.Select(p => new ProductDto
+            int totalPages = (int)Math.Ceiling(totalItems / (double)pageSize);
+
+            sqlBase += " ORDER BY id OFFSET @offset ROWS FETCH NEXT @pageSize ROWS ONLY";
+            parameters.Add("offset", (page - 1) * pageSize);
+            parameters.Add("pageSize", pageSize);
+
+            var products = await _dbConnection.QueryAsync<Product>(sqlBase, parameters);
+
+            return new ProductListResponseDto
             {
-                Id = p.Id,
-                Name = p.Name,
-                Description = p.Description,
-                Price = p.Price,
-                StockQuantity = p.StockQuantity
-            }).ToList();
+                Products = products.Select(p => new ProductDto
+                {
+                    Id = p.Id,
+                    Name = p.Name,
+                    Description = p.Description,
+                    Price = p.Price,
+                    StockQuantity = p.StockQuantity
+                }).ToList(),
+                CurrentPage = page,
+                TotalPages = totalPages
+            };
         }
 
         public async Task<bool> UpdateProductAsync(int id, string name, string description, decimal price, int stockQuantity)
@@ -193,35 +204,53 @@ namespace OrderManagementApi.Data.Repository
                 throw new InvalidOperationException($"Não foi possível decrementar o estoque do produto {productId}. Estoque insuficiente.");
         }
 
-        public async Task<List<SimpleProductDto>> GetSimpleProductListAsync(string? nameOrDescription)
+        public async Task<ProductSimpleListResponseDto> GetProductListSimpleAsync(string? nameOrDescription, int page = 1)
         {
-            string sql = @"
-                SELECT 
-                    id,
-                    name,
-                    description,
-                    price
-                FROM product";
-
+            const int pageSize = 50;
             var parameters = new DynamicParameters();
+            string whereClause = "";
 
             if (!string.IsNullOrWhiteSpace(nameOrDescription))
             {
-                sql += " WHERE name LIKE @search OR description LIKE @search";
+                whereClause = " WHERE name LIKE @search OR description LIKE @search";
                 parameters.Add("search", $"{nameOrDescription}%");
             }
 
+            string sqlCount = $"SELECT COUNT(*) FROM product{whereClause}";
+            int totalProducts = await _dbConnection.ExecuteScalarAsync<int>(sqlCount, parameters);
+
+            int totalPages = (int)Math.Ceiling(totalProducts / (double)pageSize);
+            int offset = (page - 1) * pageSize;
+
+            string sql = $@"
+            SELECT 
+                id,
+                name,
+                description,
+                price
+            FROM product
+            {whereClause}
+            ORDER BY name
+            OFFSET @Offset ROWS FETCH NEXT @PageSize ROWS ONLY";
+
+            parameters.Add("Offset", offset);
+            parameters.Add("PageSize", pageSize);
+
             var products = await _dbConnection.QueryAsync<Product>(sql, parameters);
 
-            return products.Select(p => new SimpleProductDto
+            return new ProductSimpleListResponseDto
             {
-                Id = p.Id,
-                Name = p.Name,
-                Description = p.Description,
-                Price = p.Price
-            }).ToList();
+                Products = products.Select(p => new ProductSimpleDto
+                {
+                    Id = p.Id,
+                    Name = p.Name,
+                    Description = p.Description,
+                    Price = p.Price
+                }).ToList(),
+                CurrentPage = page,
+                TotalPages = totalPages
+            };
         }
-
 
         #endregion
 

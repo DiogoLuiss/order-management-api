@@ -1,4 +1,4 @@
-﻿@model List<OrderManagementApi.DTOs.SimpleProductDto>
+﻿@model OrderManagementApi.DTOs.ProductSimpleListResponseDto
 
 <div class="table-responsive">
 	<table class="table table-bordered">
@@ -11,9 +11,9 @@
 			</tr>
 		</thead>
 		<tbody id="productList">
-			@if (Model != null && Model.Any())
+			@if (Model.Products != null && Model.Products.Any())
 			{
-				@foreach (var product in Model)
+				@foreach (var product in Model.Products)
 				{
 					<tr>
 						<td>@product.Name</td>
@@ -42,4 +42,6 @@
 
 		</tbody>
 	</table>
+
+	<div id="paginationInfo" data-current-page="@Model.CurrentPage" data-total-pages="@Model.TotalPages"></div>
 </div>

@@ -59,35 +59,54 @@ namespace OrderManagementApi.Data.Repository
             };
         }
 
-        public async Task<List<ClientDto>> GetClientListAsync(string? nameOrEmail)
+        public async Task<ClientListResponseDto> GetClientListAsync(string? nameOrEmail, int page = 1)
         {
-            string sql = @"
-                SELECT 
-                    id,
-                    name,
-                    email,
-                    phone,
-                    created_at
-                FROM client";
-
+            const int pageSize = 50;
             var parameters = new DynamicParameters();
+            string whereClause = "";
 
             if (!string.IsNullOrWhiteSpace(nameOrEmail))
             {
-                sql += " WHERE name LIKE @search OR email LIKE @search";
+                whereClause = " WHERE name LIKE @search OR email LIKE @search";
                 parameters.Add("search", $"{nameOrEmail}%");
             }
 
+            string sqlCount = $"SELECT COUNT(*) FROM client{whereClause}";
+            int totalClients = await _dbConnection.ExecuteScalarAsync<int>(sqlCount, parameters);
+
+            int totalPages = (int)Math.Ceiling(totalClients / (double)pageSize);
+            int offset = (page - 1) * pageSize;
+
+            string sql = $@"
+            SELECT 
+                id,
+                name,
+                email,
+                phone,
+                created_at
+            FROM client
+            {whereClause}
+            ORDER BY created_at DESC
+            OFFSET @Offset ROWS FETCH NEXT @PageSize ROWS ONLY";
+
+            parameters.Add("Offset", offset);
+            parameters.Add("PageSize", pageSize);
+
             var clients = await _dbConnection.QueryAsync<Client>(sql, parameters);
 
-            return clients.Select(c => new ClientDto
+            return new ClientListResponseDto
             {
-                Id = c.Id,
-                Name = c.Name,
-                Email = c.Email,
-                Phone = c.Phone,
-                CreatedAt = c.CreatedAt
-            }).ToList();
+                Clients = clients.Select(c => new ClientDto
+                {
+                    Id = c.Id,
+                    Name = c.Name,
+                    Email = c.Email,
+                    Phone = c.Phone,
+                    CreatedAt = c.CreatedAt
+                }).ToList(),
+                CurrentPage = page,
+                TotalPages = totalPages
+            };
         }
 
         public async Task CreateClientAsync(string name, string email, string phone)
@@ -150,33 +169,52 @@ namespace OrderManagementApi.Data.Repository
             return affectedRows > 0;
         }
 
-        public async Task<List<ClientSimpleDto>> GetClientListSimpleAsync(string? nameOrEmail)
+        public async Task<ClientSimpleListResponseDto> GetClientListSimpleAsync(string? nameOrEmail, int page = 1)
         {
-            string sql = @"
+            const int pageSize = 50;
+            var parameters = new DynamicParameters();
+            string whereClause = "";
+
+            if (!string.IsNullOrWhiteSpace(nameOrEmail))
+            {
+                whereClause = " WHERE name LIKE @search OR email LIKE @search";
+                parameters.Add("search", $"{nameOrEmail}%");
+            }
+
+            string sqlCount = $"SELECT COUNT(*) FROM client{whereClause}";
+            int totalClients = await _dbConnection.ExecuteScalarAsync<int>(sqlCount, parameters);
+
+            int totalPages = (int)Math.Ceiling(totalClients / (double)pageSize);
+            int offset = (page - 1) * pageSize;
+
+            string sql = $@"
                 SELECT 
                     id,
                     name,
                     email,
                     phone
-                FROM client";
+                FROM client
+                {whereClause}
+                ORDER BY name
+                OFFSET @Offset ROWS FETCH NEXT @PageSize ROWS ONLY";
 
-            var parameters = new DynamicParameters();
-
-            if (!string.IsNullOrWhiteSpace(nameOrEmail))
-            {
-                sql += " WHERE name LIKE @search OR email LIKE @search";
-                parameters.Add("search", $"{nameOrEmail}%");
-            }
+            parameters.Add("Offset", offset);
+            parameters.Add("PageSize", pageSize);
 
             var clients = await _dbConnection.QueryAsync<Client>(sql, parameters);
 
-            return clients.Select(c => new ClientSimpleDto
+            return new ClientSimpleListResponseDto
             {
-                Id = c.Id,
-                Name = c.Name,
-                Email = c.Email,
-                Phone = c.Phone
-            }).ToList();
+                Clients = clients.Select(c => new ClientSimpleDto
+                {
+                    Id = c.Id,
+                    Name = c.Name,
+                    Email = c.Email,
+                    Phone = c.Phone
+                }).ToList(),
+                CurrentPage = page,
+                TotalPages = totalPages
+            };
         }
 
         #endregion

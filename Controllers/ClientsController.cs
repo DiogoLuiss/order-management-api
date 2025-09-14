@@ -44,7 +44,7 @@ namespace OrderManagementApi.Controllers
 
             try
             {
-                List<ClientDto> clients = await _clientRepository.GetClientListAsync(viewModel.NameOrEmail);
+                ClientListResponseDto clients = await _clientRepository.GetClientListAsync(viewModel.NameOrEmail, viewModel.Page);
                 return PartialView("_ClientsGrid", clients);
             }
             catch (Exception ex)
@@ -63,7 +63,7 @@ namespace OrderManagementApi.Controllers
 
             try
             {
-                List<ClientSimpleDto> clients = await _clientRepository.GetClientListSimpleAsync(viewModel.NameOrEmail);
+                ClientSimpleListResponseDto clients = await _clientRepository.GetClientListSimpleAsync(viewModel.NameOrEmail, viewModel.Page);
                 return PartialView("_ClientsGridSimple", clients);
             }
             catch (Exception ex)

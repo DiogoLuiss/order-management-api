@@ -1,5 +1,12 @@
 ﻿namespace OrderManagementApi.DTOs
 {
+    public class ClientSimpleListResponseDto
+    {
+        public List<ClientSimpleDto> Clients { get; set; } = new List<ClientSimpleDto>();
+        public int CurrentPage { get; set; }
+        public int TotalPages { get; set; }
+    }
+
     public class ClientSimpleDto
     {
         public int Id { get; set; }
