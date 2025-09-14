@@ -54,6 +54,10 @@ namespace OrderManagementApi.Controllers
 
                 return Ok(client);
             }
+            catch (BadRequestException ex)
+            {
+                return StatusCode(StatusCodes.Status400BadRequest, new { ex.Message });
+            }
             catch (Exception ex)
             {
                 return StatusCode(500, new { Message = $"Erro interno ao processar a requisição. {ex.Message}"});
@@ -74,6 +78,10 @@ namespace OrderManagementApi.Controllers
             {
                 await _clientRepository.CreateClientAsync(viewModel.Name, viewModel.Email, viewModel.Phone);
                 return Ok(new { Message = "Cliente criado com sucesso." });
+            }
+            catch (BadRequestException ex)
+            {
+                return StatusCode(StatusCodes.Status400BadRequest, new { ex.Message });
             }
             catch (Exception ex)
             {

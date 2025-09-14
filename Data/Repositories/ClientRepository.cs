@@ -111,6 +111,16 @@ namespace OrderManagementApi.Data.Repository
 
         public async Task CreateClientAsync(string name, string email, string phone)
         {
+            string checkSql = @"
+            SELECT COUNT(1)
+            FROM client
+            WHERE name = @Name OR email = @Email";
+
+            var exists = await _dbConnection.ExecuteScalarAsync<int>(checkSql, new { Name = name, Email = email });
+
+            if (exists > 0)
+                throw new BadRequestException("Já existe um cliente com este nome ou e-mail.");
+
             string sql = @"
                 INSERT INTO client (name, email, phone)
                 VALUES (@Name, @Email, @Phone)";
