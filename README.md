@@ -55,7 +55,7 @@ Permite gerenciar clientes, produtos e pedidos, com acesso a dados via <strong>D
 
 <h2>🔗 Integração com Front-End</h2>
 <p>O back-end é consumido pelo front-end do projeto, que realiza todas as operações de CRUD via <strong>HTTP usando Axios</strong>.<br>
-Repositório front-end: <a href="https://github.com/DiogoLuiss/order-management-web">Order Management Front-End</a></p>
+Repositório front-end: <a href="https://github.com/DiogoLuiss/order-management-web">Order Management</a></p>
 
 <hr>
 
