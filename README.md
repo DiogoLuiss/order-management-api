@@ -122,6 +122,12 @@ Permite gerenciar clientes, produtos e pedidos, com acesso a dados via <strong>D
   </li>
 </ul>
 
+<h3>7. Observações</h3>
+<p>O projeto foi desenvolvido seguindo o padrão <strong>MVC</strong>, conforme solicitado no desafio técnico.</p>
+<ul>
+  <li>As <strong>Views</strong> foram utilizadas junto com respostas em <strong>JSON</strong>, com o objetivo de demonstrar domínio em ambas as abordagens.</li>
+</ul>
+
 <hr>
 
 <h2>Integração com Front-End</h2>
