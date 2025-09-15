@@ -151,7 +151,7 @@ Repositório front-end: <a href="https://github.com/DiogoLuiss/order-management-
     Ambos os arquivos devem conter a string de conexão com o banco de dados SQL Server:
     <pre><code>{
   "ConnectionStrings": {
-    "DefaultConnection": "Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=order_management;User ID=SEU_USUARIO;Password=SUA_SENHA;Persist Security Info=True;Pooling=False;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Application Name=SQLServerManagementStudio;Command Timeout=30"
+    "DefaultConnection": "Data Source=SERVWIN28\\SERVWIN28;Initial Catalog=;User ID=SEU_USUARIO;Password=SUA_SENHA;Persist Security Info=True;Pooling=False;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=True;Application Name=SQLServerManagementStudio;Command Timeout=30"
   }
 }</code></pre>
   </li>
