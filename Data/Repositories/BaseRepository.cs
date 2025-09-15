@@ -4,13 +4,13 @@ namespace OrderManagementApi.Data.Repository
 {
     public abstract class BaseRepository
     {
-        #region Propriedades
+        #region Properties
 
         protected readonly IDbConnection _dbConnection;
 
         #endregion
 
-        #region Construtor
+        #region Constructor
 
         protected BaseRepository(IDbConnection dbConnection)
         {

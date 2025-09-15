@@ -9,7 +9,7 @@ namespace OrderManagementApi.Data.Repository
 {
     public class ClientRepository : BaseRepository
     {
-        #region Atributs
+        #region Attributes
 
         private readonly IDapperWrapper _dapper;
 

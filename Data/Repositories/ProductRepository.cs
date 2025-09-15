@@ -9,7 +9,7 @@ namespace OrderManagementApi.Data.Repository
 {
     public class ProductRepository : BaseRepository
     {
-        #region Atributs
+        #region Attributes
 
         private readonly IDapperWrapper _dapper;
 
@@ -254,8 +254,6 @@ namespace OrderManagementApi.Data.Repository
 
         #endregion
 
-        #region 
-
         #region Private Methods 
 
         private async Task<int> CountOrdersWithProductAsyncInternal(int productId)
@@ -268,9 +266,6 @@ namespace OrderManagementApi.Data.Repository
 
             return await _dapper.ExecuteScalarAsync<int>(sql, new { ProductId = productId });
         }
-
-        #endregion
-
 
         #endregion
     }

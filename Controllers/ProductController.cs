@@ -10,7 +10,7 @@ namespace OrderManagementApi.Controllers
     [Route("product")]
     public class ProductController : Controller
     {
-        #region Atributs
+        #region Attributes
 
         private readonly ProductRepository _productRepository;
         private readonly IValidationService _validationService;

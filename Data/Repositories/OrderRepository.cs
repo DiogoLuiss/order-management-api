@@ -9,7 +9,7 @@ namespace OrderManagementApi.Data.Repository
 {
     public class OrderRepository : BaseRepository
     {
-        #region Atributs
+        #region Attributes
 
         private readonly ProductRepository _productRepository;
         private readonly ClientRepository _clientRepository;

@@ -12,7 +12,7 @@ namespace OrderManagementApi.Controllers
     [Route("order")]
     public class OrderController : Controller
     {
-        #region Atributs
+        #region Attributes
 
         private readonly OrderRepository _orderRepository;
         private readonly CreateOrderViewModelValidator _createOrderViewModelValidator;

@@ -11,7 +11,7 @@ namespace OrderManagementApi.Controllers
     [Route("clients")]
     public class ClientsController : Controller
     {
-        #region Atributs
+        #region Attributes
 
         private readonly ClientRepository _clientRepository;
         private readonly IValidationService _validationService;
