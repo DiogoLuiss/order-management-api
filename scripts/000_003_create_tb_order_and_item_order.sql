@@ -15,7 +15,7 @@ GO
 
 INSERT INTO [dbo].[order_status] (id, description) VALUES
 (1, 'Novo'),
-(2, 'Processamento'),
+(2, 'Processando'),
 (3, 'Finalizado')
 GO
 
